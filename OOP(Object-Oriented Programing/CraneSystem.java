@@ -1,6 +1,5 @@
 import java.util.*;
 
-//Crane Position init
 abstract class Position {
     int x;
     int y;
@@ -14,9 +13,8 @@ abstract class Position {
     void moveY(int dy) { this.y += dy; } 
 }
 
-//motor status init
 class Motor extends Position {
-    boolean isActive;
+    private boolean isActive;
 
     Motor() {
         isActive = false;
@@ -29,14 +27,22 @@ class Motor extends Position {
     public void deactivate() {
         isActive = false;
     }
+
+    public boolean isActive() {
+        return isActive;
+    }
 }
 
-//object position init
 class Box extends Position {
     int z;
 
     Box() {
         z = 0;
+    }
+
+    void move(int dx, int dy) {
+        this.x += dx;
+        this.y += dy;
     }
 }
 
@@ -52,6 +58,14 @@ class CraneSystem {
         }
     }
 
+    void moveBox(int dx, int dy) {
+        object.move(dx, dy);
+    }
+
+    boolean isBoxAt(int x, int y) {
+        return object.x == x && object.y == y;
+    }
+
 
 public static void main(String[] args) throws Exception {
     CraneSystem cs = new CraneSystem();
@@ -62,6 +76,29 @@ public static void main(String[] args) throws Exception {
         String command = scanner.nextLine();
 
         boolean flag = false;
+
+        System.out.print("Enter a command: ");
+        String command = scanner.nextLine();
+
+        boolean flag = false;
+
+        if(command.startsWith("move")) {
+            String[] parts = command.split(" ");
+            int dx = Integer.parseInt(parts[1]);
+            int dy = Integer.parseInt(parts[2]);
+            cs.moveBox(dx, dy);
+            cs.commands.add(command);
+        }
+        else if(command.startsWith("check")) {
+            String[] parts = command.split(" ");
+            int x = Integer.parseInt(parts[1]);
+            int y = Integer.parseInt(parts[2]);
+            if(cs.isBoxAt(x, y)) {
+                System.out.println("The box is at (" + x + ", " + y + ").");
+            } else {
+                System.out.println("The box is not at (" + x + ", " + y + ").");
+            }
+        }
 
         if(command.equals("right")) {
             cs.motors.get(1-1).activate();
